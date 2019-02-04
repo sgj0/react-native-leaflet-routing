@@ -4,7 +4,23 @@
   "version": "1.0.0",
   "main": "index.js",
   "private": false,
-  "license": "MIT",
+  "license": "ISC",
+  "author": {
+    "name": "sgj0",
+    "email": "contact@sgj0.eu"
+  },
+  "keywords": [
+    "react-native",
+    "leaflet",
+    "leaflet-routing-machine"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/sgj0/react-native-leaflet-routing.git"
+  },
+  "bugs": {
+    "url": "https://github.com/sgj0/react-native-leaflet-routing/issues"
+  },
   "scripts": {
     "dev": "webpack-dev-server --env.NODE_ENV=developement --mode development",
     "build": "webpack --env.NODE_ENV=production --progress --mode production"
