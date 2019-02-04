@@ -1,0 +1,64 @@
+# Compiled source #
+*.com
+*.class
+*.dll
+*.exe
+*.o
+*.so
+
+# Logs #
+*.log
+
+# OS generated files #
+.DS_Store
+.DS_Store?
+.AppleDouble
+.AppleDB
+.AppleDesktop
+.LSOverride
+._*
+.Spotlight-V100
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+ehthumbs.db
+Thumbs.db
+Network Trash Folder
+Temporary Items
+.apdisk
+.Trash-*
+.directory
+
+# Dependancies #
+tmp
+cache
+vendor
+node_modules
+package-lock.json
+yarn.lock
+npm-debug.log
+composer.lock
+.lock-wscript
+.ssh.json
+
+# IDE files #
+#############
+nbproject
+.~lock.*
+.buildpath
+.idea
+.project
+.settings
+*.sublime-project
+*.tmlanguage.cache
+*.tmPreferences.cache
+*.stTheme.cache
+[._]*.s[a-w][a-z]
+[._]s[a-w][a-z]
+*.un~
+Session.vim
+.netrwhist
+*~
