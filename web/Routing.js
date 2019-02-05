@@ -64,10 +64,12 @@ class Routing extends MapLayer {
     }).on('routesfound', e => {
       console.log(e);
 
+      // make the app know that somes routes has been found
       mapComponent.sendMessage({event: 'onRoutesFound', payload: e.routes});
     }).on('routeselected', e => {
       console.log(e);
 
+      // make the app know that a route has been selected
       mapComponent.sendMessage({event: 'onRouteSelected', payload: e.route});
     }).addTo(this.state.leaflet.map);
   }

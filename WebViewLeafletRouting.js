@@ -17,7 +17,7 @@ const MESSAGE_PREFIX = 'react-native-webview-leaflet';
 const INDEX_FILE_PATH = `./dist/index.html`;
 const INDEX_FILE_ASSET_URI = Asset.fromModule(require(INDEX_FILE_PATH)).uri;
 
-export default class WebViewLeaflet extends React.Component {
+export default class WebViewLeafletRouting extends React.Component {
   constructor(props) {
     super(props);
 
