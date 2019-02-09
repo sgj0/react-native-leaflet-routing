@@ -66,6 +66,16 @@ export default class WebViewLeafletRouting extends React.Component {
       }
     }
 
+    // handle updates to urlRouter
+    if (this.props.urlRouter && this.props.urlRouter !== prevProps.urlRouter) {
+      console.log('****** sending urlRouter');
+      this.sendMessage({urlRouter: this.props.urlRouter});
+      // store the url routing so that we can ensure the map gets it upon
+      // its loading since it is possible that the position might
+      // be availible before the map has been loaded
+      this.setState({urlRouter: this.props.urlRouter});
+    }
+
     // handle updates to routingMarkers
     if (this.props.routingMarkers && this.props.routingMarkers.from.length === 2 && this.props.routingMarkers.to.length === 2 && JSON.stringify(prevProps.routingMarkers) !== JSON.stringify(this.props.routingMarkers)) {
       if (isValidCoordinates(this.props.routingMarkers.from[1], this.props.routingMarkers.from[0]) && isValidCoordinates(this.props.routingMarkers.to[1], this.props.routingMarkers.to[0])) {
@@ -282,7 +292,6 @@ export default class WebViewLeafletRouting extends React.Component {
 
   renderCenterOnOwnPositionMarkerButton = () => {
     if (!this.props.ownPositionMarker) {
-      console.warn('Prop `ownPositionMarker` must be passed in order to display the center on own position button.');
       return null;
     }
 

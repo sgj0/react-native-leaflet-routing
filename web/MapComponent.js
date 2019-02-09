@@ -1,7 +1,6 @@
 import React from 'react';
 import {Map, TileLayer, Marker} from 'react-leaflet';
 import L from 'leaflet';
-import isValidCoordinates from 'is-valid-coordinates';
 import util from 'util';
 
 import 'leaflet/dist/leaflet.css';
@@ -23,6 +22,7 @@ class MapComponent extends React.Component {
       loaded: false,
       zoom: 13,
       ownPositionMarker: props.ownPositionMarker,
+      urlRouter: null,
       routingMarkers: null,
       centerPosition: [],
       debugMessages: []
@@ -46,8 +46,6 @@ class MapComponent extends React.Component {
     // debug mode for web browser
     if (ENABLE_BROWSER_TESTING) {
       const centerPosition = [48.88658, 2.28741];
-      const from = [48.87541, 2.32555];
-      const to = [48.85513, 2.38713];
 
       this.setState({
         centerPosition: centerPosition,
@@ -55,10 +53,6 @@ class MapComponent extends React.Component {
           coords: centerPosition,
           icon: '❤️',
           size: [24, 24]
-        },
-        routingMarkers: {
-          from: from,
-          to: to
         }
       });
     }
@@ -77,8 +71,19 @@ class MapComponent extends React.Component {
       this.printElement(`updating centerPosition to ${this.state.centerPosition}`);
     }
 
+    if (this.state.urlRouter !== prevState.urlRouter) {
+      this.printElement(`updating urlRouter to ${JSON.stringify(this.state.urlRouter)}`);
+    }
+
     if (this.state.routingMarkers !== prevState.routingMarkers) {
       this.printElement(`updating routingMarkers to ${JSON.stringify(this.state.routingMarkers)}`);
+    }
+  };
+
+  // update the map ref
+  updateMapRef = (ref) => {
+    if (ref) {
+      this.mapRef = ref;
     }
   };
 
@@ -104,7 +109,11 @@ class MapComponent extends React.Component {
         ...this.state.debugMessages,
         message
       ]
-    }, () => console.log(message));
+    }, () => {
+      if (ENABLE_BROWSER_TESTING) {
+        console.log(message);
+      }
+    });
   };
 
   // create a leaflet icon
@@ -152,7 +161,6 @@ class MapComponent extends React.Component {
       }
     } catch (err) {
       this.printElement(`leafletReactHTML error: ${err}`);
-      return;
     }
   };
 
@@ -183,37 +191,61 @@ class MapComponent extends React.Component {
     // to center the map.  Centering the map component on the actual
     // map center will allow us to recenter the map by updating the centerPosition
     // item in state ourself
-    if (event === 'onMoveEnd') {
-      this.setState({centerPosition: mapCenterPosition});
-    }
 
-    if (event === 'onZoomEnd') {
-      this.setState({zoom: mapZoom});
+    switch (event) {
+      case 'onMoveEnd':
+        this.setState({centerPosition: mapCenterPosition});
+        break;
+
+      case 'onZoomEnd':
+        this.setState({zoom: mapZoom});
+        break;
+
+      case 'onMapLoaded':
+        if (ENABLE_BROWSER_TESTING) {
+
+          setTimeout(() => {
+            this.setState({
+              urlRouter: 'http://127.0.0.1:5000/route/v1',
+              routingMarkers: {
+                from: [
+                  48.87541, 2.32555
+                ],
+                to: [48.85513, 2.38713]
+              }
+            });
+          }, 2000);
+        }
+        break;
+
+      default:
     }
   };
 
   // display the own position marker
   renderMarkerOwnPosition = () => {
-    const ownPositionMarker = this.state.ownPositionMarker;
+    const {ownPositionMarker, loaded} = this.state;
 
-    if (!ownPositionMarker || !this.state.loaded) {
+    if (!ownPositionMarker || !loaded) {
       return null;
     }
 
     const divIcon = this.createDivIcon(ownPositionMarker);
 
-    return (<Marker position={ownPositionMarker.coords} icon={divIcon} onClick={() => console.log('ownPositionMarker clicked')}/>);
+    return (<Marker position={ownPositionMarker.coords} icon={divIcon} onClick={(event) => {
+        this.onMapEvent('onCurrentPositionClicked', event.latlng);
+      }}/>);
   };
 
   // display the routing
   renderRouting = () => {
-    const routingMarkers = this.state.routingMarkers;
+    const {routingMarkers, loaded, urlRouter} = this.state;
 
-    if (!routingMarkers || !this.state.loaded) {
+    if (!routingMarkers || !loaded) {
       return null;
     }
 
-    return (<Routing coords={routingMarkers} mapComponent={this}/>);
+    return (<Routing coords={routingMarkers} mapComponent={this} urlRouter={urlRouter}/>);
   };
 
   // display error messages
@@ -248,7 +280,15 @@ class MapComponent extends React.Component {
   renderMap = () => {
     return !this.state.ownPositionMarker
       ? (<div>waiting on own position</div>)
-      : (<Map ref={ref => this.mapRef = ref} center={this.state.centerPosition} maxZoom={18} zoom={this.state.zoom} whenReady={() => {
+      : (<Map
+        // ref
+        ref={ref => this.updateMapRef(ref)}
+        // position of the map
+        center={this.state.centerPosition}
+        // zoom
+        zoom={this.state.zoom} maxZoom={18}
+        // EVENTS
+        whenReady={() => {
           this.setState({
             loaded: true
           }, () => {

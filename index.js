@@ -1,3 +1,3 @@
-import WebViewLeafletRouting from './WebViewLeafletRouting';
+import Routing from './Routing';
 
-module.exports = WebViewLeafletRouting;
+module.exports = Routing;

@@ -31,11 +31,14 @@ class Routing extends MapLayer {
         from,
         to
       },
-      mapComponent
+      mapComponent,
+      urlRouter
     } = this.props;
 
     return this.leafletElement = L.Routing.control({
-      // router: new L.Routing.OSRMv1({serviceUrl: 'http://127.0.0.1:5000/route/v1'}),
+      router: urlRouter
+        ? new L.Routing.OSRMv1({serviceUrl: urlRouter})
+        : null,
       position: 'topright',
       waypoints: [
         L.latLng({lat: from[0], lng: from[1]}),
@@ -65,12 +68,17 @@ class Routing extends MapLayer {
       console.log(e);
 
       // make the app know that somes routes has been found
-      mapComponent.sendMessage({event: 'onRoutesFound', payload: e.routes});
+      mapComponent.onMapEvent('onRoutesFound', e.routes);
     }).on('routeselected', e => {
       console.log(e);
 
       // make the app know that a route has been selected
-      mapComponent.sendMessage({event: 'onRouteSelected', payload: e.route});
+      mapComponent.onMapEvent('onRouteSelected', e.route);
+    }).on('routingerror', e => {
+      console.log(e);
+
+      // make the app know that an error has been occured
+      mapComponent.onMapEvent('onRouteError', e.error);
     }).addTo(this.state.leaflet.map);
   }
 
