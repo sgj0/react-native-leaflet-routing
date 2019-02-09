@@ -23,6 +23,12 @@ npm install --save react-native-leaflet-routing
 ```
 
 ## Usage
+### Import
+```js
+import Routing from 'react-native-leaflet-routing';
+```
+
+### Render
 ```js
 <Routing
   // required: coordinates of the starting point
@@ -30,11 +36,46 @@ npm install --save react-native-leaflet-routing
 
   // required: coordinates of the arriving point
   to={[latitude, longitude]}
-/>
+
+  // optional : event functions
+  eventReceiver={eventReceiver}
+
+  // optional: url of routing server
+  urlRouter={urlRouter}/>
 ```
 
+### Config
+`latitude` and `longitude` are required numbers.
+
+`eventReceiver` is an optional object :
+```js
+{
+  onLoad: (event) => {},
+  onUnload: (event) => {},
+  onMapLoaded: (event) => {},
+  onUpdateMapState: (event) => {},
+  onMapClicked: (event) => {},
+  onMapMarkerClicked: (event) => {},
+  onZoom: (event) => {},
+  onZoomStart: (event) => {},
+  onZoomEnd: (event) => {},
+  onZoomLevelsChange: (event) => {},
+  onMove: (event) => {},
+  onMoveStart: (event) => {},
+  onMoveEnd: (event) => {},
+  onCurrentPositionClicked: (event) => {},
+  onResize: (event) => {},
+  onViewReset: (event) => {},
+  onRoutesFound: (event) => {},
+  onRouteSelected: (event) => {},
+  onRouteError: (event) => {}
+}
+```
+
+`urlRouter` is an optional string.
+
 ## Demo
-There is an example on react native in the example/ folder.
+There is an react native app in the example/ folder.
 
 ## Debug
 
