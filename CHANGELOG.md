@@ -10,3 +10,7 @@
 - url routing optional
 - event receiver optional
 - improve react native example
+
+## 1.2.0
+- map layer required
+- improve react native example
