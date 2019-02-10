@@ -2,7 +2,9 @@ import React from 'react';
 import {StyleSheet, Text, View, Alert} from 'react-native';
 import {Constants} from 'expo';
 
-import Routing from 'react-native-leaflet-routing';
+import mapLayers from './mapLayers';
+import Routing from './Routing';
+// import Routing from 'react-native-leaflet-routing';
 
 export default class App extends React.Component {
   constructor(props) {
@@ -117,6 +119,8 @@ export default class App extends React.Component {
         from={from}
         // required: coordinates of the arriving point
         to={to}
+        // required: map layer
+        mapLayer={mapLayers[0]}
         // optional : event functions
         eventReceiver={eventReceiver}
         // optional: url of routing server
@@ -127,9 +131,7 @@ export default class App extends React.Component {
 
 const styles = StyleSheet.create({
   container: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: '#00ffff',
-    display: 'flex'
+    ...StyleSheet.absoluteFillObject
   },
   statusBar: {
     height: Constants.statusBarHeight
