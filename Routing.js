@@ -10,12 +10,11 @@ export default class Routing extends React.Component {
 
     this.state = {
       eventReceiver: props.eventReceiver,
-      errorMessages: [],
-      currentLocation: [],
       mapLayer: null,
+      currentLocation: null,
       ownPositionMarker: null,
       routingMarkers: null,
-      centerPosition: []
+      centerPosition: null
     };
   }
 
@@ -25,10 +24,10 @@ export default class Routing extends React.Component {
     } else {
       this.initMap();
     }
-  }
+  };
 
   initMap = async () => {
-    let centerPosition = [];
+    let centerPosition;
     let ownPositionMarker;
 
     try {
@@ -36,28 +35,27 @@ export default class Routing extends React.Component {
       console.log('current location', location);
 
       centerPosition = [location.coords.latitude, location.coords.longitude];
+      ownPositionMarker = {
+        coords: centerPosition,
+        icon: '❤️',
+        size: [24, 24]
+      };
     } catch (e) {
       console.log(e);
 
       centerPosition = [48.85861640881589, 2.3510742187500004];
-
-      this.setState({
-        errorMessages: [
-          ...this.state.errorMessages,
-          e.message
-        ]
-      });
     } finally {
-      this.setState({
-        mapLayer: this.props.mapLayer,
-        centerPosition: centerPosition,
-        currentLocation: centerPosition,
-        ownPositionMarker: {
-          coords: centerPosition,
-          icon: '❤️',
-          size: [24, 24]
-        }
-      });
+      let mapLayer = this.props.mapLayer;
+      if (!mapLayer) {
+        mapLayer = {
+          name: 'OpenStreetMap',
+          type: 'TileLayer',
+          url: `https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png`,
+          attribution: '&amp;copy <a href=&quot;http://osm.org/copyright&quot;>OpenStreetMap</a> contributors'
+        };
+      }
+
+      this.setState({mapLayer: mapLayer, centerPosition: centerPosition, currentLocation: centerPosition, ownPositionMarker: ownPositionMarker});
     }
   };
 
@@ -83,7 +81,7 @@ export default class Routing extends React.Component {
         to: to
       }
     });
-  }
+  };
 
   // send the event to parent component
   sendEvent = (name, event) => {
@@ -178,23 +176,10 @@ export default class Routing extends React.Component {
     //////////////
   */
 
-  // display the error messages
-  renderErrors = () => {
-    const errors = this.state.errorMessages;
-
-    return errors.length
-      ? errors.map((error, index) => {
-        return (<Text key={index} style={{
-            margin: 10
-          }}>{error}</Text>);
-      })
-      : null;
-  };
-
   render() {
     return (<WebViewLeafletRouting
       // ref
-      ref={(component) => (this.webViewLeaflet = component)}
+      ref={component => this.webViewLeaflet = component}
       // event handler
       eventReceiver={this}
       // map layer

@@ -8,6 +8,7 @@ import 'leaflet-routing-machine/dist/leaflet-routing-machine.css';
 import './app.css';
 
 import Routing from './Routing';
+import RasterLayer from './RasterLayer';
 
 const MESSAGE_PREFIX = 'react-native-webview-leaflet';
 const SHOW_DEBUG_INFORMATION = WEBPACK_ENV === 'developement';
@@ -21,10 +22,11 @@ class MapComponent extends React.Component {
     this.state = {
       loaded: false,
       zoom: 13,
-      ownPositionMarker: props.ownPositionMarker,
+      mapLayer: null,
+      ownPositionMarker: null,
       urlRouter: null,
       routingMarkers: null,
-      centerPosition: [],
+      centerPosition: null,
       debugMessages: []
     };
   }
@@ -48,6 +50,12 @@ class MapComponent extends React.Component {
       const centerPosition = [48.88658, 2.28741];
 
       this.setState({
+        mapLayer: {
+          name: 'OpenStreetMap',
+          type: 'TileLayer',
+          url: `https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png`,
+          attribution: '&amp;copy <a href=&quot;http://osm.org/copyright&quot;>OpenStreetMap</a> contributors'
+        },
         centerPosition: centerPosition,
         ownPositionMarker: {
           coords: centerPosition,
@@ -67,6 +75,10 @@ class MapComponent extends React.Component {
   };
 
   componentDidUpdate = (prevProps, prevState) => {
+    if (this.state.mapLayer !== prevState.mapLayer) {
+      this.printElement(`updating mapLayer to ${JSON.stringify(this.state.mapLayer)}`);
+    }
+
     if (this.state.centerPosition !== prevState.centerPosition) {
       this.printElement(`updating centerPosition to ${this.state.centerPosition}`);
     }
@@ -124,7 +136,7 @@ class MapComponent extends React.Component {
           ${location.icon}
           </div>`,
       iconAnchor: location.iconAnchor || null
-    });;
+    });
   };
 
   // data to send is an object containing key value pairs that will be spread into the destination's state
@@ -203,18 +215,15 @@ class MapComponent extends React.Component {
 
       case 'onMapLoaded':
         if (ENABLE_BROWSER_TESTING) {
-
-          setTimeout(() => {
-            this.setState({
-              urlRouter: 'http://127.0.0.1:5000/route/v1',
-              routingMarkers: {
-                from: [
-                  48.87541, 2.32555
-                ],
-                to: [48.85513, 2.38713]
-              }
-            });
-          }, 2000);
+          this.setState({
+            urlRouter: 'http://127.0.0.1:5000/route/v1',
+            routingMarkers: {
+              from: [
+                48.87541, 2.32555
+              ],
+              to: [48.85513, 2.38713]
+            }
+          });
         }
         break;
 
@@ -276,10 +285,14 @@ class MapComponent extends React.Component {
       : null
   };
 
+  renderLayer = () => {
+    return (<RasterLayer layer={this.state.mapLayer}/>);
+  }
+
   // display the map
   renderMap = () => {
-    return !this.state.ownPositionMarker
-      ? (<div>waiting on own position</div>)
+    return !this.state.mapLayer || !this.state.centerPosition
+      ? (<div>waiting on map layer</div>)
       : (<Map
         // ref
         ref={ref => this.updateMapRef(ref)}
@@ -320,7 +333,7 @@ class MapComponent extends React.Component {
         }} onViewReset={() => {
           this.onMapEvent('onViewReset', null);
         }}>
-        <TileLayer url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png' attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'></TileLayer>
+        {this.renderLayer()}
         {this.renderMarkerOwnPosition()}
         {this.renderRouting()}
       </Map>);
@@ -329,8 +342,7 @@ class MapComponent extends React.Component {
   render() {
     return (<div style={{
         width: '100%',
-        height: '100%',
-        backgroundColor: 'lightblue'
+        height: '100%'
       }}>
       {this.renderMap()}
       {this.renderDebugInfos()}

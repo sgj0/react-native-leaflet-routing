@@ -24,8 +24,6 @@ class Routing extends MapLayer {
   }
 
   createLeafletElement(props) {
-    console.log(props);
-
     const {
       coords: {
         from,
