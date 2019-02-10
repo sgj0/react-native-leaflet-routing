@@ -31,6 +31,9 @@ import Routing from 'react-native-leaflet-routing';
 ### Render
 ```js
 <Routing
+  // required: map layer
+  mapLayer={mapLayer}
+
   // required: coordinates of the starting point
   from={[latitude, longitude]}
 
@@ -45,6 +48,16 @@ import Routing from 'react-native-leaflet-routing';
 ```
 
 ### Config
+`mapLayer` is a required object :
+```js
+{
+  name: 'OpenStreetMap',
+  type: 'TileLayer',
+  url: `https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png`,
+  attribution: '&amp;copy <a href=&quot;http://osm.org/copyright&quot;>OpenStreetMap</a> contributors'
+}
+```
+
 `latitude` and `longitude` are required numbers.
 
 `eventReceiver` is an optional object :
@@ -100,7 +113,7 @@ npm run start
 ```
 
 ## Infos
-To get your own routing server, please see the [Project ORSM](http://project-osrm.org/).
+To get your own routing server, check out the [Project ORSM](http://project-osrm.org/). For tile server, check out [OSM Server](https://opentileserver.org/).
 
 ## Thanks
 Special thanks to [reggie3](https://github.com/reggie3), [perliedman](https://github.com/perliedman), [PaulLeCam](https://github.com/PaulLeCam) and contributors to these projects for their great works.
