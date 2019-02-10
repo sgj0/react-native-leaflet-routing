@@ -3,8 +3,7 @@ import {StyleSheet, Text, View, Alert} from 'react-native';
 import {Constants} from 'expo';
 
 import mapLayers from './mapLayers';
-import Routing from './Routing';
-// import Routing from 'react-native-leaflet-routing';
+import Routing from 'react-native-leaflet-routing';
 
 export default class App extends React.Component {
   constructor(props) {
@@ -115,12 +114,12 @@ export default class App extends React.Component {
       </Text>
 
       <Routing
+        // required: map layer
+        mapLayer={mapLayers[0]}
         // required: coordinates of the starting point
         from={from}
         // required: coordinates of the arriving point
         to={to}
-        // required: map layer
-        mapLayer={mapLayers[0]}
         // optional : event functions
         eventReceiver={eventReceiver}
         // optional: url of routing server
