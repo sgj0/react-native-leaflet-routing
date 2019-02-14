@@ -11,7 +11,6 @@ import {
 import {Asset, Location, Permissions} from 'expo';
 import util from 'util';
 import isValidCoordinates from 'is-valid-coordinates';
-import uniqby from 'lodash.uniqby';
 
 const MESSAGE_PREFIX = 'react-native-webview-leaflet';
 const INDEX_FILE_PATH = `./dist/index.html`;
@@ -102,6 +101,16 @@ export default class WebViewLeafletRouting extends React.Component {
       }
     }
 
+    // handle updates to markers
+    if (this.props.markers && this.props.markers !== prevProps.markers) {
+      console.log('****** sending markers');
+      this.sendMessage({markers: this.props.markers});
+      // store the markers so that we can ensure the map gets it upon
+      // its loading since it is possible that the position might
+      // be availible before the map has been loaded
+      this.setState({markers: this.props.markers});
+    }
+
     // actions to be performed one time immediately after the map
     // completes loading
     if (!prevState.mapLoaded && this.state.mapLoaded) {
@@ -125,7 +134,7 @@ export default class WebViewLeafletRouting extends React.Component {
       };
     }
 
-    // do the same for ownPostionMarker
+    // do the same for ownPositionMarker
     if (this.props.ownPositionMarker && this.props.ownPositionMarker.coords && this.props.ownPositionMarker.coords.length == 2 && isValidCoordinates(this.props.ownPositionMarker.coords[1], this.props.ownPositionMarker.coords[0])) {
       onMapLoadedUpdate = {
         ...onMapLoadedUpdate,
@@ -146,6 +155,14 @@ export default class WebViewLeafletRouting extends React.Component {
       onMapLoadedUpdate = {
         ...onMapLoadedUpdate,
         mapLayer: this.props.mapLayer
+      };
+    }
+
+    // do the same for markers
+    if (this.props.markers) {
+      onMapLoadedUpdate = {
+        ...onMapLoadedUpdate,
+        markers: this.props.markers
       };
     }
 
@@ -209,38 +226,18 @@ export default class WebViewLeafletRouting extends React.Component {
         const location = await Location.getCurrentPositionAsync({});
 
         centerPosition = [location.coords.latitude, location.coords.longitude];
-        ownPositionMarker = {
-          coords: centerPosition,
-          icon: '❤️',
-          size: [24, 24]
-        };
       } else {
         centerPosition = this.props.ownPositionMarker.coords;
       }
     } catch (e) {
       console.log(e);
     } finally {
-      this.sendMessage({centerPosition: centerPosition, ownPositionMarker: ownPositionMarker});
+      ownPositionMarker = {
+        coords: centerPosition
+      };
+
+      this.sendMessage({centerPosition, ownPositionMarker});
     }
-  };
-
-  validateLocations = (locations) => {
-    // confirm the location coordinates are valid
-    const validCoordLocations = locations.filter((location) => {
-      return isValidCoordinates(location.coords[1], location.coords[0]);
-    });
-
-    // remove any locations that are already in the component state's 'locations'
-    // create a new array containing all the locations
-    let combinedArray = [
-      ...this.state.locations,
-      ...validCoordLocations
-    ];
-
-    // remove duplicate locations
-    const deDupedLocations = uniqby(combinedArray, 'id');
-    this.sendLocations(deDupedLocations);
-    this.setState({locations: deDupedLocations});
   };
 
   onError = (error) => {

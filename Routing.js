@@ -1,6 +1,4 @@
 import React from 'react';
-import {Platform} from 'react-native';
-import {Constants, Location, Permissions} from 'expo';
 
 import WebViewLeafletRouting from './WebViewLeafletRouting';
 
@@ -10,8 +8,8 @@ export default class Routing extends React.Component {
 
     this.state = {
       eventReceiver: props.eventReceiver,
+      markers: [],
       mapLayer: null,
-      currentLocation: null,
       ownPositionMarker: null,
       routingMarkers: null,
       centerPosition: null
@@ -19,60 +17,46 @@ export default class Routing extends React.Component {
   }
 
   componentDidMount = () => {
-    if (Platform.OS === 'android' && !Constants.isDevice) {
-      console.log('Oops, this will not work on Sketch in an Android emulator. Try it on your device!');
-    } else {
-      this.initMap();
+    this.initMap();
+  };
+
+  componentDidUpdate = (prevProps, prevState) => {
+    if (this.props.ownPositionMarker && this.props.ownPositionMarker !== prevProps.ownPositionMarker) {
+      this.setState({ownPositionMarker: this.props.ownPositionMarker, centerPosition: this.props.ownPositionMarker.coords});
+    }
+
+    if (this.props.markers && this.props.markers !== prevProps.markers) {
+      this.setState({markers: this.props.markers});
     }
   };
 
-  initMap = async () => {
-    let centerPosition;
-    let ownPositionMarker;
+  initMap = () => {
+    let centerPosition = [45.72348047159787, 4.83214326115558];
+    let {mapLayer, markers, ownPositionMarker} = this.props;
 
-    try {
-      const location = await this.getLocationAsync();
-      console.log('current location', location);
+    if (ownPositionMarker) {
+      let centerPosition = ownPositionMarker.coords;
+    }
 
-      centerPosition = [location.coords.latitude, location.coords.longitude];
-      ownPositionMarker = {
-        coords: centerPosition,
-        icon: '❤️',
-        size: [24, 24]
+    if (!mapLayer) {
+      mapLayer = {
+        name: 'OpenStreetMap',
+        type: 'TileLayer',
+        url: `https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png`,
+        attribution: '© <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
       };
-    } catch (e) {
-      console.log(e);
-
-      centerPosition = [48.85861640881589, 2.3510742187500004];
-    } finally {
-      let mapLayer = this.props.mapLayer;
-      if (!mapLayer) {
-        mapLayer = {
-          name: 'OpenStreetMap',
-          type: 'TileLayer',
-          url: `https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png`,
-          attribution: '&amp;copy <a href=&quot;http://osm.org/copyright&quot;>OpenStreetMap</a> contributors'
-        };
-      }
-
-      this.setState({mapLayer: mapLayer, centerPosition: centerPosition, currentLocation: centerPosition, ownPositionMarker: ownPositionMarker});
-    }
-  };
-
-  // get the current location so that the map can be displayed
-  getLocationAsync = async () => {
-    let {status} = await Permissions.askAsync(Permissions.LOCATION);
-
-    if (status !== 'granted') {
-      throw new Error('Permission to access location was denied');
     }
 
-    return await Location.getCurrentPositionAsync({});
+    this.setState({mapLayer, centerPosition, markers, ownPositionMarker});
   };
 
   // get the routing
   getRouting = () => {
     const {urlRouter, from, to} = this.props;
+
+    if (!from || !to) {
+      return console.log('No coordinates for the routing');
+    }
 
     this.setState({
       urlRouter,
@@ -177,20 +161,31 @@ export default class Routing extends React.Component {
   */
 
   render() {
+    const {
+      mapLayer,
+      centerPosition,
+      ownPositionMarker,
+      urlRouter,
+      routingMarkers,
+      markers
+    } = this.state;
+
     return (<WebViewLeafletRouting
       // ref
       ref={component => this.webViewLeaflet = component}
       // event handler
       eventReceiver={this}
       // map layer
-      mapLayer={this.state.mapLayer}
+      mapLayer={mapLayer}
       // center position
-      centerPosition={this.state.centerPosition}
+      centerPosition={centerPosition}
       // own position
-      ownPositionMarker={this.state.ownPositionMarker}
+      ownPositionMarker={ownPositionMarker}
       // url router for routing
-      urlRouter={this.state.urlRouter}
+      urlRouter={urlRouter}
       // routing markers
-      routingMarkers={this.state.routingMarkers}/>);
+      routingMarkers={routingMarkers}
+      // markers
+      markers={markers}/>);
   }
 }

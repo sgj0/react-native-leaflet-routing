@@ -27,6 +27,7 @@ class MapComponent extends React.Component {
       urlRouter: null,
       routingMarkers: null,
       centerPosition: null,
+      markers: [],
       debugMessages: []
     };
   }
@@ -54,14 +55,22 @@ class MapComponent extends React.Component {
           name: 'OpenStreetMap',
           type: 'TileLayer',
           url: `https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png`,
-          attribution: '&amp;copy <a href=&quot;http://osm.org/copyright&quot;>OpenStreetMap</a> contributors'
+          attribution: '© <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
         },
         centerPosition: centerPosition,
         ownPositionMarker: {
-          coords: centerPosition,
-          icon: '❤️',
-          size: [24, 24]
-        }
+          id: 'position',
+          coords: centerPosition
+        },
+        markers: [
+          {
+            id: 'marker1',
+            coords: [45.752432918044825, 4.841709136962891]
+          }, {
+            id: 'marker2',
+            coords: [45.741891419102785, 4.870891571044922]
+          }
+        ]
       });
     }
   };
@@ -89,6 +98,14 @@ class MapComponent extends React.Component {
 
     if (this.state.routingMarkers !== prevState.routingMarkers) {
       this.printElement(`updating routingMarkers to ${JSON.stringify(this.state.routingMarkers)}`);
+    }
+
+    if (this.state.ownPositionMarker !== prevState.ownPositionMarker) {
+      this.printElement(`updating ownPositionMarker to ${JSON.stringify(this.state.ownPositionMarker)}`);
+    }
+
+    if (this.state.markers !== prevState.markers) {
+      this.printElement(`updating markers to ${JSON.stringify(this.state.markers)}`);
     }
   };
 
@@ -239,11 +256,17 @@ class MapComponent extends React.Component {
       return null;
     }
 
-    const divIcon = this.createDivIcon(ownPositionMarker);
+    if (ownPositionMarker.icon) {
+      const divIcon = this.createDivIcon(ownPositionMarker);
 
-    return (<Marker position={ownPositionMarker.coords} icon={divIcon} onClick={(event) => {
-        this.onMapEvent('onCurrentPositionClicked', event.latlng);
-      }}/>);
+      return (<Marker position={ownPositionMarker.coords} icon={divIcon} onClick={(event) => {
+          this.onMapEvent('onCurrentPositionClicked', {ownPositionMarker});
+        }}/>);
+    } else {
+      return (<Marker position={ownPositionMarker.coords} onClick={(event) => {
+          this.onMapEvent('onCurrentPositionClicked', {ownPositionMarker});
+        }}/>);
+    }
   };
 
   // display the routing
@@ -255,6 +278,23 @@ class MapComponent extends React.Component {
     }
 
     return (<Routing coords={routingMarkers} mapComponent={this} urlRouter={urlRouter}/>);
+  };
+
+  // display the markers
+  renderMarkers = () => {
+    return this.state.markers.map((marker, index) => {
+      if (marker.icon) {
+        const divIcon = this.createDivIcon(marker);
+
+        return (<Marker key={index} position={marker.coords} icon={divIcon} onClick={(event) => {
+            this.onMapEvent('onMapMarkerClicked', {marker});
+          }}/>);
+      } else {
+        return (<Marker key={index} position={marker.coords} onClick={(event) => {
+            this.onMapEvent('onMapMarkerClicked', {marker});
+          }}/>);
+      }
+    });
   };
 
   // display error messages
@@ -335,6 +375,7 @@ class MapComponent extends React.Component {
         }}>
         {this.renderLayer()}
         {this.renderMarkerOwnPosition()}
+        {this.renderMarkers()}
         {this.renderRouting()}
       </Map>);
   }
