@@ -5,22 +5,22 @@ const mapLayers = [
     name: 'OpenStreetMap',
     type: 'TileLayer',
     url: `https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png`,
-    attribution: '&amp;copy <a href=&quot;http://osm.org/copyright&quot;>OpenStreetMap</a> contributors'
+    attribution: '© <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
   }, {
     name: 'streets',
     type: 'TileLayer',
     url: `https://api.tiles.mapbox.com/v4/mapbox.streets/{z}/{x}/{y}.png?access_token=${mapboxToken}`,
-    attribution: '&amp;copy <a href=&quot;http://osm.org/copyright&quot;>OpenStreetMap</a> contributors'
+    attribution: '© <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
   }, {
     name: 'light',
     type: 'TileLayer',
     url: `https://api.tiles.mapbox.com/v4/mapbox.light/{z}/{x}/{y}.png?access_token=${mapboxToken}`,
-    attribution: '&amp;copy <a href=&quot;http://osm.org/copyright&quot;>OpenStreetMap</a> contributors'
+    attribution: '© <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
   }, {
     name: 'dark',
     type: 'TileLayer',
     url: `https://api.tiles.mapbox.com/v4/mapbox.dark/{z}/{x}/{y}.png?access_token=${mapboxToken}`,
-    attribution: '&amp;copy <a href=&quot;http://osm.org/copyright&quot;>OpenStreetMap</a> contributors'
+    attribution: '© <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
   }, {
     name: 'image',
     type: 'ImageOverlay',
