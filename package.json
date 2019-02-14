@@ -1,7 +1,7 @@
 {
   "name": "react-native-leaflet-routing",
   "description": "A React Native component using WebView to provide a Leaflet Routing",
-  "version": "1.2.1",
+  "version": "1.3.0",
   "main": "index.js",
   "private": false,
   "license": "ISC",
@@ -30,7 +30,6 @@
     "is-valid-coordinates": "^1.0.0",
     "leaflet": "^1.4.0",
     "leaflet-routing-machine": "^3.2.12",
-    "lodash.uniqby": "^4.7.0",
     "react": "^15.0.1",
     "react-dom": "^15.0.1",
     "react-leaflet": "^1.9.1",
