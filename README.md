@@ -31,24 +31,30 @@ import Routing from 'react-native-leaflet-routing';
 ### Render
 ```js
 <Routing
-  // required: map layer
+  // optional: map layer
   mapLayer={mapLayer}
 
-  // required: coordinates of the starting point
+  // optional: coordinates of the starting point
   from={[latitude, longitude]}
 
-  // required: coordinates of the arriving point
+  // optional: coordinates of the arriving point
   to={[latitude, longitude]}
 
   // optional : event functions
   eventReceiver={eventReceiver}
 
   // optional: url of routing server
-  urlRouter={urlRouter}/>
+  urlRouter={urlRouter}
+
+  // optional: own position
+  ownPositionMarker={ownPositionMarker}
+
+  // optional: list of markers
+  markers={markers} />
 ```
 
 ### Config
-`mapLayer` is a required object :
+`mapLayer` is an optional object :
 ```js
 {
   name: 'OpenStreetMap',
@@ -58,7 +64,7 @@ import Routing from 'react-native-leaflet-routing';
 }
 ```
 
-`latitude` and `longitude` are required numbers.
+`latitude` and `longitude` are optional numbers.
 
 `eventReceiver` is an optional object :
 ```js
@@ -87,6 +93,19 @@ import Routing from 'react-native-leaflet-routing';
 
 `urlRouter` is an optional string.
 
+`markers` is an optional array of `Marker` (see below the format of `Marker`).
+
+`ownPositionMarker` is an optional `Marker` object (see below the format of `Marker`).
+
+`Marker` is an object :
+```js
+{
+  coords: [latitude, longitude], // required. latitude and longitude are number
+  icon: '❤️', // optional. Can be an html img or string
+  size: [width, height] // required if icon is setted. width and height are number
+}
+```
+
 ## Demo
 There is an react native app in the example/ folder.
 
@@ -108,7 +127,6 @@ npm run build
 ### Mobile
 To launch expo
 ```bash
-cd example/
 npm run start
 ```
 
