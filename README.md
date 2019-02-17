@@ -34,6 +34,9 @@ import Routing from 'react-native-leaflet-routing';
   // optional: map layer
   mapLayer={mapLayer}
 
+  //optional : initial region displayed
+  initialRegion={[latitude, longitude]}
+
   // optional: coordinates of the starting point
   from={[latitude, longitude]}
 
