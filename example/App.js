@@ -10,6 +10,9 @@ export default class App extends React.Component {
     super(props);
 
     this.state = {
+      initialRegion: [
+        45.72348047159787, 4.83214326115558
+      ],
       ownPositionMarker: null,
       from: [
         45.76488848662397, 4.836387634277344
@@ -24,7 +27,7 @@ export default class App extends React.Component {
   }
 
   componentDidMount = async () => {
-    let centerPosition;
+    let initialRegion;
     let ownPositionMarker;
 
     try {
@@ -35,15 +38,15 @@ export default class App extends React.Component {
       const location = await this.getLocationAsync();
       console.log('current location', location);
 
-      centerPosition = [location.coords.latitude, location.coords.longitude];
+      initialRegion = [location.coords.latitude, location.coords.longitude];
     } catch (e) {
       console.log(e);
 
-      centerPosition = [45.72348047159787, 4.83214326115558];
+      initialRegion = [45.72348047159787, 4.83214326115558];
     } finally {
       ownPositionMarker = {
         id: 'position',
-        coords: centerPosition
+        coords: initialRegion
       };
 
       this.setState({
@@ -99,6 +102,7 @@ export default class App extends React.Component {
 
   render() {
     const {
+      initialRegion,
       from,
       to,
       urlRouter,
@@ -195,6 +199,8 @@ export default class App extends React.Component {
       </Text>
 
       <Routing
+        //optional : initial region displayed
+        initialRegion={initialRegion}
         // optional: map layer
         mapLayer={mapLayer}
         // optional: own position

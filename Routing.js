@@ -8,6 +8,7 @@ export default class Routing extends React.Component {
 
     this.state = {
       eventReceiver: props.eventReceiver,
+      initialRegion: props.initialRegion,
       markers: [],
       mapLayer: null,
       ownPositionMarker: null,
@@ -32,10 +33,14 @@ export default class Routing extends React.Component {
 
   initMap = () => {
     let centerPosition = [45.72348047159787, 4.83214326115558];
-    let {mapLayer, markers, ownPositionMarker} = this.props;
+    let {initialRegion, mapLayer, markers, ownPositionMarker} = this.props;
 
-    if (ownPositionMarker) {
-      let centerPosition = ownPositionMarker.coords;
+    if (initialRegion) {
+      centerPosition = initialRegion;
+    } else {
+      if (ownPositionMarker) {
+        centerPosition = ownPositionMarker.coords;
+      }
     }
 
     if (!mapLayer) {
@@ -163,6 +168,7 @@ export default class Routing extends React.Component {
   render() {
     const {
       mapLayer,
+      initialRegion,
       centerPosition,
       ownPositionMarker,
       urlRouter,
@@ -176,7 +182,7 @@ export default class Routing extends React.Component {
       // event handler
       eventReceiver={this}
       // map layer
-      mapLayer={mapLayer}
+      mapLayer={mapLayer} initialRegion={initialRegion}
       // center position
       centerPosition={centerPosition}
       // own position
