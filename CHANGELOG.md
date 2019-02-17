@@ -21,3 +21,6 @@
 - list of markers displayed
 - improve react native example
 - minor fix for the contribution displayed in the footer
+
+## 1.4.0
+- optional initial region prop
